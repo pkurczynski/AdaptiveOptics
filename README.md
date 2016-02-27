@@ -1,5 +1,5 @@
 # AdaptiveOptics
-Software to control an adaptive optics system at Bell Labs
+Un-twinkling the stars, and enabling super-human vision.
 
 Adaptive Optics are systems that correct time-varying distortions in a telescope image that are caused by atmospheric turbulence.  They are also used to correct distortions caused by the lens of the eye in microscopes that study human vision.
 
