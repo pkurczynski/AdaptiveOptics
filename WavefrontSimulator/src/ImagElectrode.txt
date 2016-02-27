@@ -1,0 +1,12 @@
+File Name: ImagElectrode.txt
+Array Dimension: 100
+Stress, MPa 7
+Thickness, um 1
+Gap Distance, um 25
+Width, mm 20
+Bias, V 0
+ROIDimension, mm 20
+Mesh Size, mm 0.2
+Membrane Tension, MKS 7
+Peak Deflection, um 0
+-2	-1	0	1	2	3	4	5	6	7	8	9	10	11	12	13	14	15	16	17	18	19	20	21	22	23	24	25	26	

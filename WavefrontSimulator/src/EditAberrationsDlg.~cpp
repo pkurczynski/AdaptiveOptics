@@ -1,0 +1,73 @@
+//---------------------------------------------------------------------
+#include <vcl.h>
+#pragma hdrstop
+
+#include "EditAberrationsDlg.h"
+//---------------------------------------------------------------------
+#pragma resource "*.dfm"
+TEditAberrationsDialog *EditAberrationsDialog;
+//--------------------------------------------------------------------- 
+__fastcall TEditAberrationsDialog::TEditAberrationsDialog(TComponent* AOwner)
+	: TForm(AOwner)
+{
+}
+//---------------------------------------------------------------------
+
+
+//---------------------------------------------------------------------
+// Execute()
+//
+// Executes the Dialog box, and sets component data values to their
+// user-updated values, if the user clicks "OK."   Frees the dialog
+// box after the user closes it.
+//
+// called by:  TForm1::EditAberrationsExecute(TObject *Sender)
+//
+//---------------------------------------------------------------------
+bool __fastcall TEditAberrationsDialog::Execute()
+{
+   EditAberrationsDialog = new TEditAberrationsDialog(Application);
+   bool Result;
+
+   try
+   {
+#if 0
+
+
+   double  theAberrationConstant = AberrationConstantEditBox->Text.ToDouble();
+   double  theAberrationTip = AberrationTipEditBox->Text.ToDouble();
+   double  theAberrationTilt = AberrationTiltEditBox->Text.ToDouble();
+   double  theAberrationAstigmatism =
+                AberrationAstigmatismEditBox->Text.ToDouble();
+   double  theAberrationDefocus = AberrationDefocusEditBox->Text.ToDouble()
+
+      EditAberrationsDialog->AberrationsStressEditBox->Text =
+         Form1->theAberrationsStress_MPa;
+      EditAberrationsDialog->AberrationsThicknessEditBox->Text =
+         Form1->theAberrationsThickness_um;
+      EditAberrationsDialog->AberrationsGapDistanceEditBox->Text =
+         Form1->theAberrationsGapDistance_um ;
+#endif
+
+      Result = (EditAberrationsDialog->ShowModal() == IDOK );
+
+     
+
+#if 0
+      Form1->theAberrationsStress_MPa        =
+         EditAberrationsDialog->AberrationsStressEditBox->Text.ToDouble();
+      Form1->theAberrationsThickness_um =
+         EditAberrationsDialog->AberrationsThicknessEditBox->Text.ToDouble();
+      Form1->theAberrationsGapDistance_um  =
+         EditAberrationsDialog->AberrationsGapDistanceEditBox->Text.ToDouble();
+#endif
+   }
+   catch(...)
+   {
+      Result = false;
+   }
+   EditAberrationsDialog->Free();
+
+   return Result;
+}
+

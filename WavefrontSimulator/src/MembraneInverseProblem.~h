@@ -1,0 +1,62 @@
+//---------------------------------------------------------------------------
+// MembraneInverseProblem.h                                    C++ Header file
+//
+// Class definition for the the MembraneInverseProblem class.   A membrane mirror
+// simulates reflection of a Wavefront from a membrane with a shape that
+// has been determined by a MembranePDEproblem.  In essence, this class
+// implements the phase shift that occurs to a Wavefront upon being reflected
+// by the membrane.
+//
+// See also Wavefront class definition and MembranePDEproblem class definition.
+//
+// version 2
+// plk 4/28/2003
+//---------------------------------------------------------------------------
+#ifndef MembraneInverseProblemH
+#define MembraneInverseProblemH
+#include "MembranePDEProblem.h"
+#include "Graphics3d.h"
+#include "Wavefront.h"
+
+
+class MembraneInverseProblem : public MembranePDEProblem
+{
+   private:
+
+      AnsiString ImagElectrodeFileName;
+      AnsiString RealElectrodeFileName;
+
+      double   InvertedMembraneSign;
+
+      double   **RealElectrodeVoltage;
+      double   **ImagElectrodeVoltage;
+      double   **RealElectrodeVoltage_Graph;
+      double   **ImagElectrodeVoltage_Graph;
+
+      void     ComputeElectrodeVoltagesFromPoissonEquation();
+      void     WriteHeaderDataToFile(AnsiString inFileName);
+      void     AppendArrayDataToFile(AnsiString   inFileName,
+                                     double     **inArrayData);
+
+   public:
+
+      MembraneInverseProblem(Wavefront *inWavefront,
+                             double     inMembraneStress_MPa,
+                             double     inMembraneThickness_um,
+                             double     inMembraneGapDistance_um,
+                             double     inMembraneTopElectrode_V,
+                             double     inMembraneTopElectrodeDistance_um);
+
+      ~MembraneInverseProblem();
+
+      void ScaleDataForGraphicsDisplay();
+      void DisplayRealElectrodeVoltage(Graphics3d *ioGraphicsCanvas);
+      void DisplayImagElectrodeVoltage(Graphics3d *ioGraphicsCanvas);
+      void WriteElectrodeDataToFile();
+      void SetRHS();
+
+};
+
+extern MembraneInverseProblem *theMembraneInverseProblem;
+
+#endif

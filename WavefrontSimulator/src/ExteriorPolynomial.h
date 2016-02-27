@@ -1,0 +1,55 @@
+//-----------------------------------------------------------------------------
+// ExteriorPolynomial.h                                C++ Header file
+//
+// An ExteriorPolynomial is a cubic polynomial in r multiplied by
+// sin(m theta) or cos(m theta).  The form of the polynomial is chosen
+// to match a Zernike polynomial on the unit disk in value and slope,
+// and to have zero value and slope at a specified outer radius.  The
+// polynomial may be expressed as:
+//
+//     E(r,theta)  = ( a + b r + c r^2 + d^r^3  )*{ cos (m*theta)  m>=0 }
+//                                                { sin (m*theta)  m<0  }
+//
+// radial coefficients a,b,c,d are found solving the linear system
+// of four boundary conditions (value and slope at inner, outer radii).
+//
+// Azimuthal frequency, m is chosen to match a corresponding ZernikePolynomial.
+//
+// plk 4/27/2003
+//-----------------------------------------------------------------------------
+
+#ifndef EXTERIORPOLYNOMIAL_H
+#define EXTERIORPOLYNOMIAL_H
+
+#define MAXEXTERIORPOLYNOMIALDEGREE 4
+
+class ExteriorPolynomial
+{
+
+ protected:
+
+        int         AzimuthalFrequency;         // usually 'm'
+        int         NumberOfRadialTerms;
+        double      RadialCoefficient[MAXEXTERIORPOLYNOMIALDEGREE];
+
+ public:
+        ExteriorPolynomial();
+        ~ExteriorPolynomial();
+
+
+        void SetAzimuthalFrequency(inFreq){ AzimuthalFrequency = inFreq; }
+       
+        void SetCubicRadialPolynomial(double inValueAtInnerRadius,
+                                      double inDerivativeAtInnerRadius,
+                                      double inOuterRadius);
+                                      
+        void SetQuadraticRadialPolynomial(double inValueAtInnerRadius,
+                                          double inDerivativeAtInnerRadius,
+                                          double inOuterRadius);
+
+        double Evaluate(const double inR, const double inTheta);
+
+
+};
+
+#endif

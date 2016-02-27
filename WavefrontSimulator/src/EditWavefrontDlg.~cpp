@@ -1,0 +1,64 @@
+//---------------------------------------------------------------------
+#include <vcl.h>
+#pragma hdrstop
+
+#include "EditWavefrontDlg.h"
+#include "WavefrontGUI.h"
+
+//---------------------------------------------------------------------
+#pragma resource "*.dfm"
+TEditWavefrontDialog *EditWavefrontDialog;
+//---------------------------------------------------------------------
+__fastcall TEditWavefrontDialog::TEditWavefrontDialog(TComponent* AOwner)
+	: TForm(AOwner)
+{
+}
+//---------------------------------------------------------------------
+
+//---------------------------------------------------------------------
+// Execute()
+//
+// Executes the Dialog box, and sets component data values to their
+// user-updated values, if the user clicks "OK."   Frees the dialog
+// box after the user closes it.
+//
+// called by:  TForm1::EditWavefrontExecute(TObject *Sender)
+//
+//---------------------------------------------------------------------
+bool __fastcall TEditWavefrontDialog::Execute()
+{
+   EditWavefrontDialog = new TEditWavefrontDialog(Application);
+   bool Result;
+
+   try
+   {
+      EditWavefrontDialog->WavefrontWidthEditBox->Text =
+         Form1->theWavefrontWidth_mm;
+      EditWavefrontDialog->WavefrontROIRadiusEditBox->Text =
+         0.5 *Form1->theWavefrontROIDimension_mm;
+      EditWavefrontDialog->WavefrontPupilRadiusEditBox->Text =
+         Form1->theWavefrontPupilRadius_mm ;
+      EditWavefrontDialog->WavefrontArrayDimensionEditBox->Text =
+         Form1->theWavefrontArrayDimension ;
+
+      Result = (EditWavefrontDialog->ShowModal() == IDOK );
+
+      Form1->theWavefrontWidth_mm        =
+         EditWavefrontDialog->WavefrontWidthEditBox->Text.ToDouble();
+      Form1->theWavefrontROIDimension_mm =
+         2 * EditWavefrontDialog->WavefrontROIRadiusEditBox->Text.ToDouble();
+      Form1->theWavefrontPupilRadius_mm  =
+         EditWavefrontDialog->WavefrontPupilRadiusEditBox->Text.ToDouble();
+      Form1->theWavefrontArrayDimension  =
+         EditWavefrontDialog->WavefrontArrayDimensionEditBox->Text.ToInt();
+
+   }
+   catch(...)
+   {
+      Result = false;
+   }
+   EditWavefrontDialog->Free();
+
+   return Result;
+}
+

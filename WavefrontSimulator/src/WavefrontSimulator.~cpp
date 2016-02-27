@@ -1,0 +1,44 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#pragma hdrstop
+USERES("WavefrontSimulator.res");
+USEFORM("WavefrontGUI.cpp", WavefrontGUIForm);
+USEUNIT("Graphics3d.cpp");
+USEUNIT("AberratedWavefront.cpp");
+USEUNIT("Wavefront.cpp");
+USEUNIT("ZernikePolynomial.cpp");
+USEUNIT("ExteriorPolynomial.cpp");
+USEUNIT("MembranePDEProblem.cpp");
+USEUNIT("MembraneInverseProblem.cpp");
+USEUNIT("ADI.C");
+USEUNIT("SOR.C");
+USEUNIT("NRUTIL1.C");
+USEFORM("EditWavefrontDlg.cpp", EditWavefrontDialog);
+USEFORM("EditMembraneDlg.cpp", EditMembraneDialog);
+USEFORM("ZCoeffDataModule.cpp", ZernikeCoeffDataModule); /* TDataModule: File Type */
+USEFORM("ZCoeffTable.cpp", ZCoeffTableForm);
+USEFORM("EditBiasLensDlg.cpp", EditBiasLensDialog);
+USEUNIT("Lens.cpp");
+USEUNIT("ZOffsetZernikePolynomial.cpp");
+//---------------------------------------------------------------------------
+WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
+{
+        try
+        {
+                 Application->Initialize();
+                 Application->CreateForm(__classid(TWavefrontGUIForm), &WavefrontGUIForm);
+                 Application->CreateForm(__classid(TZCoeffTableForm), &ZCoeffTableForm);
+                 Application->CreateForm(__classid(TEditWavefrontDialog), &EditWavefrontDialog);
+                 Application->CreateForm(__classid(TEditMembraneDialog), &EditMembraneDialog);
+                 Application->CreateForm(__classid(TZernikeCoeffDataModule), &ZernikeCoeffDataModule);
+                 Application->CreateForm(__classid(TEditBiasLensDialog), &EditBiasLensDialog);
+                 Application->Run();
+        }
+        catch (Exception &exception)
+        {
+                 Application->ShowException(&exception);
+        }
+        return 0;
+}
+//---------------------------------------------------------------------------

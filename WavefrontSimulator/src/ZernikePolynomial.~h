@@ -1,0 +1,106 @@
+//----------------------------------------------------------------------------
+// ZernikePolynomial.h                              C++ Header file
+//
+// Definition file for the ZernikePolynomial class.  This class implements
+// a specified Zernike Polynomial, and computes the appropriate coefficients
+// of the polynomial according to definitions and conventions in
+//
+// Thibos, L. N. et al. "Standards for Reporting the Optical Aberrations
+//      of Eyes"  presented at 1999 OSA annual meeting.  Document obtained
+//      from Nathan Doble at Univ. of Rochester.
+//
+// See also:
+// Noll, R. J. "Zernike polynomials and atmospheric turbulence," JOSA
+//      Vol. 66, No. 3, pp. 207-211, 1976.
+//
+// Polynomial ordering convention, ie Index( j value), and Azimuthal Frequency
+// (m value) definitions are different in these two papers.  The Convention
+// implemented here is used by Thibos et al.  It is the standard in vision
+// science.
+//
+// Notes on Zernike polynomials:   Z_j(r,theta) or Z^m_n(r,theta)
+//
+// m =Azimuthal Frequency, n = Radial Order, j = Index.
+//
+// Each polynomial is a function of (r,theta) on the unit disk.  Each
+// Zernike function is a polynomial function of r multiplied by either
+// a sine or cosine function of theta.
+//
+//
+// The full Zernike polynomial is given as:
+//
+//    Z_j(r,theta) = Normalization(j) * R_j(r) * sin( m*theta )   m <  0
+//    Z_j(r,theta) = Normalization(j) * R_j(r) * cos( m*theta )   m >= 0
+//
+//    j = 0...66  (for polynomials up to 10'th order in r)
+//    m can be determined from j (see Thibos et al. eqs 4-6)
+//
+// The radial factor of a ZernikePolynomial is computed as a
+// sum of powers of the radial coordinate.
+//                N
+//    R_j(r)  =  Sum { RadialCoefficient[i] * r^RadialPower[i] }
+//               i=0
+//
+//    N = NumberOfRadialTerms ( Not to exceed MAXPOLYNOMIALDEGREE )
+//
+// With this implementation, any ZernikePolynomial can be easily decomposed
+// into individual terms that are powers of the radial coordinate.  This
+// decomposition is useful for gaining an intuitive understanding of the
+// Zernike's as well as for mathematical operations on ZernikePolynomials.
+//
+// Modification history:
+//
+// 4/25/2003   changed Evaluate() to correct problem of incorrect defocus
+//             computation at (x=0,y=0).
+//
+// 4/25/2003   added method to compute radial partial derivative.
+//
+// 4/25/2003   Changed Normalization to adhere strictly to OSA convention.
+//             -1/+1 sign is factored in in Evaluate()
+//
+//
+// plk 4/23/2003
+//-----------------------------------------------------------------------------
+#ifndef ZERNIKEPOLYNOMIAL_H
+#define ZERNIKEPOLYNOMIAL_H
+
+#define MAXPOLYNOMIALDEGREE 10
+
+class ZernikePolynomial
+{
+
+   protected:
+
+        int         Index;                      // usually 'J'
+        int         RadialOrder;                // usually 'n'
+        int         AzimuthalFrequency;         // usually 'm'
+
+        int         NumberOfRadialTerms;
+        double      Normalization;
+
+        double      RadialCoefficient[MAXPOLYNOMIALDEGREE];
+        double      RadialPower[MAXPOLYNOMIALDEGREE];
+
+        virtual void ComputeRadialPolynomial();
+        static long factorial(long inX);
+
+   public:
+
+        ZernikePolynomial();
+        ZernikePolynomial(int inIndex);
+        ~ZernikePolynomial();
+
+        virtual int GetRadialOrder(void){ return RadialOrder; }
+        virtual int GetAzimuthalFrequency(void){ return AzimuthalFrequency; }
+
+
+        virtual double Evaluate(const double inR, const double inTheta);
+        virtual void   SetIndex(const int inIndex);
+        virtual double RadialDerivative(const double inR);
+        virtual double RadialDerivative(const double inR, const double inTheta);
+
+};
+
+extern ZernikePolynomial *theZernike;
+
+#endif

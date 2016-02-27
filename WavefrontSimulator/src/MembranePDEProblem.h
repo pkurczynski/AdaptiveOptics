@@ -1,0 +1,149 @@
+//---------------------------------------------------------------------------
+// MembranePDEProblem.h                          C++ Header file
+//
+// Solves a static membrane deflection problem for a specified electrode
+// geometry.  Poisson equation is solved using Gauss-Seidel, SOR, ADI
+// or an iterative scheme (full nonlinear equation).
+//
+// Boundary conditions take the form of specified values of the function
+// on the boundaries (Dirichlet's Problem)
+//
+// Membrane geometry is square.
+//
+// NOTE:  This version of MembranePDEProblem may not be compatible
+//        with the earlier version of this class, which also has a
+//        COMPLETELY DIFFERENT NAME:  MembranePDEproblem
+//
+// version 2
+// plk 04/15/2003
+//---------------------------------------------------------------------------
+
+#ifndef MembranePDEproblemH
+#define MembranePDEproblemH
+#include <StdCtrls.hpp>               // for TStaticText
+#include "Graphics3d.h"
+
+#define E_zero 8.85E-12
+
+
+class MembraneMirror;
+
+class MembranePDEProblem
+{
+   friend MembraneMirror;
+
+   protected:
+       int   ArrayDimension;         // number of elements in row, column
+                                     // of data array
+
+       double Stress_MPa;
+       double Thickness_um;
+       double GapDistance_um;
+       double Width_mm;             // Width of membrane, Units: mm
+       double Bias_V;               // Constant uniform voltage applied
+                                    // to all electrodes
+       double TopElectrode_V;          // Transparent (top) electrode voltage
+       double TopElectrodeDistance_um; //      "      distance from membrane.
+
+       double ROIDimension_mm;      // length of x,y,z axes (in 3d coords)
+       double MeshSize_mm;          // mesh size (in 3d coords)
+
+       double MeshSize_MKS;         // mesh size in MKS,  units:  m
+       double MembraneTension_MKS;  // stress * thickness, units: N/m^2
+       double GapDistance_MKS;      // equil. membrane-electrode distance,
+                                    // units: m
+       double Width_MKS;            // Width of square membrane, units: m
+       double TopElectrodeDistance_MKS;
+
+       TStaticText *PeakDeflectionTextBox;
+       double PeakDeflection_um;     // Peak deflection of membrane, computed
+                                    // from solution, units:  microns
+
+       double **SolutionData;       // pointer to array for storing result
+       double **rhs;                // pointer to array for rhs of Poisson
+                                    // Equation
+       double **ElectrodeVoltage;   // electrode voltage array.  Same grid
+                                    // density as SolutionData
+
+       AnsiString EntireSolutionDataFileName; //text file for writing solution
+       AnsiString ROISolutionDataFileName;
+
+       double **SolutionData_Graph; // scaled versions of above arrays, for
+       double **rhs_Graph;          // use in the graphics canvas
+       double **ElectrodeVoltage_Graph;
+
+
+       double ActualSolutionError_MKS; // summed error.  See SolveByIteration()
+       double DesiredFractionalError;
+       TStaticText *SolutionErrorTextBox;
+
+       int    TotalIterations;       // number of iterations to get solution
+       TStaticText *TotalIterationsTextBox;
+
+       void InitializeMKSParamsAndDataArrays();
+       void SetBoundaryConditions();
+
+       void SetActuator(double inXL,
+                        double inYL,
+                        double inXH,
+                        double inYH,
+                        double inVoltage_MKS);
+
+       void SetHexActuator(double inXCenter_mm,
+                           double inYCenter_mm,
+                           double inSideLength_mm,
+                           double inVoltage_MKS);
+
+       void SetBias();
+
+       double RowIndexToXValue(int inRow);
+       double ColumnIndexToYValue(int inColumn);
+       int XValueToRowIndex(double inXValue_mm);
+       int YValueToColumnIndex(double inYValue_mm);
+       void ComputeSolutionStatistics();
+      // bool PointIsWithinPupil(int inRowIndex, int inColumnIndex);
+       bool PointIsWithinROI(int inRowIndex, int inColumnIndex);
+       double **matrix(int nrl, int nrh, int ncl, int nch);
+
+   public:
+
+       MembranePDEProblem();
+
+       MembranePDEProblem(TEdit         *inStress,
+                          TEdit         *inThickness,
+                          TEdit         *inGapDistance,
+                          TEdit         *inWidth,
+                          TEdit         *inBiasVoltage,
+                          TStaticText   *inPeakDeflectionTextBox,
+                          TEdit         *inVoltage,
+                          TEdit         *inArrayDimension,
+                          TEdit         *inElectrodeXCenter,
+                          TEdit         *inElectrodeYCenter,
+                          TEdit         *inElectrodeXWidth,
+                          TEdit         *inElectrodeYWidth,
+                          TStaticText   *outMeshSize_mm,
+                          TStaticText   *inSolutionErrorTextBox,
+                          TStaticText   *inTotalIterationsTextBox);
+
+
+       ~MembranePDEProblem();
+
+
+       void Solve();
+       void SolveBySOR();
+       void SolveByADI();
+       void SolveByIteration();
+
+       virtual void WriteEntireSolutionDataToFile();
+       virtual void WriteROISolutionDataToFile();
+       virtual void ScaleDataForGraphicsDisplay();
+       virtual void DisplaySolution(Graphics3d *ioGraphicsCanvas);
+       virtual void DisplayRightHandSide(Graphics3d *ioGraphicsCanvas);
+       virtual void DisplayElectrodeVoltage(Graphics3d *ioGraphicsCanvas);
+
+};
+
+extern MembranePDEProblem *theMembranePDEProblem;
+
+
+#endif
