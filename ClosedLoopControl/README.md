@@ -2,6 +2,6 @@
 
 Software to control an adaptive system in closed loop.  
 
-To operate an adaptive optics system, control software must receive and interpret signals from a wavefront sensor and use this information to command the deformable mirror to flatten the optical wavefront.  Our system operated at about 15 Hz, meaning that the optical wavefront was adjusted with this frequency.
+To operate an adaptive optics system, control software receives and interprets signals from a wavefront sensor and uses this information to command the deformable mirror to flatten the optical wavefront.  Our system updated the optical wavefront many times a second.
 
-The control software was written in Tcl/Tk, starting from the wavefront sensor control software (an open loop, GUI-based system).  Substantial code was built on this foundation.  The deformable mirror was commanded by custom D/A conversion boards that were built on a VME electronics standard.  The control software commanded these VME boards, which delivered voltages to the deformable mirror.  The hardware and the control algorithm are described in Kurczynski et al. 2005 Applied Optics.
+The control software was written in Tcl/Tk, starting from software provided by the wavefront sensor manufacturer (an open loop, GUI-based system).  Substantial code was built on this foundation.  The deformable mirror was commanded by custom D/A conversion boards that were built on a VME electronics standard.  The control software commanded these VME boards, which delivered voltages to the deformable mirror.  For more information, see [Kurczynski et al. 2005, Proc. SPIE 5719 155](http://dx.doi.org/10.1117/12.593234).
