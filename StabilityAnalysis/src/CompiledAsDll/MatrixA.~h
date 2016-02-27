@@ -1,0 +1,40 @@
+//---------------------------------------------------------------------------
+// MatrixA.h                                  C Program file
+//
+// methods for a MatrixA class implementation.
+//
+// NOTE:  Numerical integration of the matrix elements done with
+// trapezoidal rule based procedure (from Numerical Recipes) must run
+// with variables in double precision, for convergence of some matrix
+// elements.  This procedure was modified from the original NR routine
+// and the corresponding source code included here.  Numerical integration
+// is also used in the Eigenfunc.c procedures.  
+//
+// plk 03/08/2005
+//---------------------------------------------------------------------------
+#ifndef MATRIXA_H
+#define MATRIXA_H
+
+
+
+void ComputeMatrixA(double **outMatrixA);
+void ComputeMatrixASum(double **outMatrixASum);
+
+double RealMatrixA(int inJRow, int inJCol);
+double RealMatrixASum(int inJRow, int inJCol);
+double AIntegrandRF(double inR);
+double TestIntegrand(double inX);
+void dump(double (*inFunc)(double),double inRL,double inRH, double inNum);
+double WeightFn_MKS(double inR);
+double WeightFnForSum_MKS(double inR_MKS, \
+                          double inPhi_Rad, \
+                          double inEVoltage_V);
+double ArrayWeightFn_MKS(double inR_MKS);
+double TestWeightFn_MKS(double inX);
+void TestElectrostaticWeightFn(double inRL,double inRH, double inNum);
+
+double qtrap(double (*func)(double), double a, double b);
+double trapzd(double (*func)(double),double a, double b, int n);
+
+
+#endif

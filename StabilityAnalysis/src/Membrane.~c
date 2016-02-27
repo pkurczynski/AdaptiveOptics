@@ -1,0 +1,507 @@
+//---------------------------------------------------------------------------
+// Membrane.c
+//
+// Membrane class.
+//
+// version 3
+// plk 05/31/2005
+//---------------------------------------------------------------------------
+#include <stdio.h>
+#include "Membrane.h"
+#include "Eigenfunc.h"
+#include "BesselJZeros.h"
+#include "MatrixUtils.h"
+#include "NR.h"
+
+
+double gMembraneStress_MPa;
+double gMembraneThickness_um;
+double gMembraneTension_NByM;      // tension = stress * thickness
+double gMembraneRadius_mm;
+
+
+double gVoltageT_V;    // Transp. electrode voltage
+double gVoltageA_V;    // Array electrode voltage
+double gDistT_um;      // Transp. electr -- membr. dist.
+double gDistA_um;      // Electr. array -- membr. dist.
+
+double gPeakDeformation_um;
+double *gExpansionCoeff_MKS;
+double (*gMembraneShape)(double, double);
+
+extern int    gNumberOfEigenFunctions;
+
+
+void Membrane()
+{
+
+
+   gMembraneStress_MPa    = 3.0;
+   gMembraneThickness_um  = 1.0;
+   gMembraneTension_NByM  = 3.0;      // tension = stress * thickness
+   gMembraneRadius_mm     = 7.5;
+
+
+   gVoltageT_V             =  0.0;    // Transp. electrode voltage
+   gVoltageA_V             = 10.0;    // Array electrode voltage
+   gDistT_um               = 25.0;    // Transp. electr -- membr. dist.
+   gDistA_um               = 25.0;    // Electr. array -- membr. dist.
+
+   gPeakDeformation_um     =  10.0;
+
+   gMembraneShape            = ExpansionInEFuncsDeformation_MKS;
+   //gMembraneShape          = ParabolicDeformation_MKS;
+
+
+
+   InitMembraneShapeCoeffs();
+
+
+   return;
+}
+
+
+
+//---------------------------------------------------------------------------
+// InitMembraneShapeCoeffs()
+//
+// Allocate, assign preliminary values to Membrane shape function expansion
+// coefficients.  Membrane shape is expanded in a series of membrane
+// eigenfunctions.
+//
+//      xi(r,phi)  =   sum(  a_j * zeta_j (r,phi) )
+//
+// Expansion coefficients are the a_j's. Computations in MKS units.
+//
+// called by: Membrane()
+//
+// plk 3/21/2005
+//---------------------------------------------------------------------------
+
+void InitMembraneShapeCoeffs()
+{
+   int j;
+
+   gExpansionCoeff_MKS = dvector(0,gNumberOfEigenFunctions-1);
+   ResetMembraneShapeCoeffs();
+
+   return;
+}
+
+
+void ResetMembraneShapeCoeffs()
+{
+   int j;
+
+   // reset all expansion coefficients to zero.
+   for (j=0;j<gNumberOfEigenFunctions;j++)
+        gExpansionCoeff_MKS[j] = 0.0;
+
+}
+
+
+//---------------------------------------------------------------------------
+// SetMembraneShape_BesselJZero()
+//
+// Sets the Membrane shape expansion coefficients so that the
+// corresponding membrane shape is a zeroth order Bessel function,
+// scaled to gPeakDeformation_um at the origin.
+//
+// called by: SAValidate.c
+//
+// plk 3/21/2005
+//---------------------------------------------------------------------------
+void SetMembraneShape_BesselJZero()
+{
+   int j;
+   double theScaleFactor;
+
+
+   theScaleFactor = 1e-8;
+
+   ResetMembraneShapeCoeffs();
+
+
+   // empirical scaling factor of 1.449 used to scale the expansion
+   // coefficient for J0 so that actual peak deformation will be
+   // specified by gPeakDeformation_um;
+   gExpansionCoeff_MKS[0] = (gPeakDeformation_um/1.449)*theScaleFactor;
+
+   LogMessage("Membrane shape:  BesselJ0");
+   LogDVector(gExpansionCoeff_MKS,0,gNumberOfEigenFunctions-1,\
+                                  "Membrane Shape Coeffs, MKS");
+}
+
+
+//---------------------------------------------------------------------------
+// SetMembraneShape_BesselJOne()
+//
+// Sets the Membrane shape expansion coefficients so that the
+// corresponding membrane shape is a zeroth order Bessel function,
+// membrane eigenfunction j=1 (STILL A 0'th order Bessel function!!)
+//
+// scaled to gPeakDeformation_um at the origin.
+//
+// called by: SAValidate.c
+//
+// plk 3/21/2005
+//---------------------------------------------------------------------------
+void SetMembraneShape_BesselJOne()
+{
+   int j;
+   double theScaleFactor;
+
+
+   theScaleFactor = 1e-8;
+
+   ResetMembraneShapeCoeffs();
+
+
+   // empirical scaling factor of 2.205 used to scale the expansion
+   // coefficient for J1 so that actual peak deformation will be
+   // specified by gPeakDeformation_um;
+   gExpansionCoeff_MKS[1] = (gPeakDeformation_um/2.205)*theScaleFactor;
+
+   LogMessage("Membrane shape:  BesselJ1");
+   LogDVector(gExpansionCoeff_MKS,0,gNumberOfEigenFunctions-1,\
+                                  "Membrane Shape Coeffs, MKS");
+
+}
+
+
+
+//---------------------------------------------------------------------------
+// SetMembraneShape_BesselJOne()
+//
+// Sets the Membrane shape expansion coefficients so that the
+// corresponding membrane shape is a zeroth order Bessel function,
+// membrane eigenfunction j=1 (STILL A 0'th order Bessel function!!)
+//
+// scaled to gPeakDeformation_um at the origin.
+//
+// called by: SAValidate.c
+//
+// plk 3/21/2005
+//---------------------------------------------------------------------------
+void SetMembraneShape_BesselJTwo()
+{
+   int j;
+   double theScaleFactor;
+
+
+   theScaleFactor = 1e-8;
+
+   ResetMembraneShapeCoeffs();
+
+
+   // empirical scaling factor of 2.205 used to scale the expansion
+   // coefficient for J1 so that actual peak deformation will be
+   // specified by gPeakDeformation_um;
+   gExpansionCoeff_MKS[2] = (gPeakDeformation_um/3.000)*theScaleFactor;
+
+   LogMessage("Membrane shape:  BesselJ2");
+   LogDVector(gExpansionCoeff_MKS,0,gNumberOfEigenFunctions-1,\
+                                  "Membrane Shape Coeffs, MKS");
+
+}
+
+
+//---------------------------------------------------------------------------
+// SetMembraneShape_Eigenfunc()
+//
+// Sets the specified membrane eigenfunction coefficient to the
+// specified value.
+//
+// called by: SAValidate.c
+//
+// plk 3/21/2005
+//---------------------------------------------------------------------------
+void SetMembraneShape_Eigenfunc(int inJ, double inValue)
+{
+   int j;
+
+
+   if (inJ > 0 && inJ < gNumberOfEigenFunctions)
+   {
+      gExpansionCoeff_MKS[inJ] = inValue;
+
+      LogMessage("Membrane shape:  Eigenfunc");
+      LogDVector(gExpansionCoeff_MKS,0,gNumberOfEigenFunctions-1,\
+                                  "Membrane Shape Coeffs, MKS");
+   }
+   else {
+      LogMessage("SetMembraneShape_Eigenfunc():  Array out of bounds error");
+   }
+
+}
+
+
+//---------------------------------------------------------------------------
+// ExpansionInEFuncsDeformation_MKS
+//
+// Computes the membrane deformation, expressed as an expansion of
+// eigenfunctions of the membrane.  Expansion coefficients must have
+// already been computed prior to calling this function.
+//
+// called by:  ComputeElectrodeVoltage()      via function pointer reference
+//                                            assigned in Membrane()
+//
+//
+// plk 3/21/2005
+//---------------------------------------------------------------------------
+double ExpansionInEFuncsDeformation_MKS(double inR_MKS, double inPhi_Rad)
+{
+
+   int    j;
+   double theSum;
+   double theMagn_MKS;
+   double thePhase_Rad;
+   double theMembraneRadius_MKS;
+
+   theMembraneRadius_MKS = gMembraneRadius_mm * 1e-3;
+
+   // if R < R_membrane compute eigenfunc. expansion
+   if (inR_MKS < theMembraneRadius_MKS)
+   {
+      theSum = 0;
+      for (j=0;j<gNumberOfEigenFunctions;j++)
+      {
+         Eigenfunc(j,inR_MKS,inPhi_Rad,&theMagn_MKS,&thePhase_Rad);
+
+         // the expression below ignores any phase contribution
+         // returned by the Eigenfunc.  gExpansionCoeff_MKS[] is
+         // assumed to be a real number.
+         theSum+=gExpansionCoeff_MKS[j]*theMagn_MKS;
+      }
+      return theSum;
+   }
+
+   // if R >= R_membrane, force function to be zero
+
+   return 0;
+
+}
+
+
+
+//---------------------------------------------------------------------------
+// Del2Expansion_MKS
+//
+// Computes the Laplacian of the Membrane shape function, with the membrane
+// shape given as a (previously computed) expansion in membrane eigenfuncs.
+//
+// if the membrane shape function is expressed as an expansion of
+// eigenfunctions:
+//
+//             xi(r,phi) = sum( a_j * zeta_j )
+//
+// where the eigenfunctions, zeta_j satisfy the eigenvalue equation
+//
+//     laplacian(zeta_j) = - (X_j/R)^2 * zeta_j
+//
+// then the laplacian(xi) is computed, using the eigenvalue equation, as:
+//
+//    laplacian(xi)  =  -1/ R^2 * sum( a_j* X_j^2 * zeta_j )
+//
+// R is the membrane radius;
+// a_j are the expansion coefficients.  X_j is the Bessel function zero
+// corresponding to Eigenfunction "j"  zeta_j are the eigenfunctions.
+//
+// This method of computing the laplacian is better than a straightforward
+// numerical differentiation of xi because it avoids the "spikes at the
+// boundaries" that arise when numerically differentiating the function, xi.
+//
+// called by: ComputeElectrodeVoltage();
+//
+// NOTE:  In general this expansion must account for the complex nature
+// of the zeta_j's.  Currently, it only treats the magnitude of the zeta_j's
+// in the summation and ignores the phase component.  This detail becomes
+// important for j>9 in the currently implementation (i.e. when using more
+// than the first 9 membrane eigenfunctions).
+//
+// plk 3/21/2005
+//---------------------------------------------------------------------------
+double Del2Expansion_MKS(double inR_MKS, double inPhi_Rad)
+{
+   int j;
+   double theSum;
+   double theMembraneRadius_MKS;
+   double theMembraneRadiusSqrd_MKS;
+   double theMagn_MKS;
+   double thePhase_Rad;
+
+   theMembraneRadius_MKS = gMembraneRadius_mm * 1e-3;
+   theMembraneRadiusSqrd_MKS = theMembraneRadius_MKS*theMembraneRadius_MKS;
+
+   // if R < R_membrane compute eigenfunc. expansion
+   if (inR_MKS < theMembraneRadius_MKS)
+   {
+
+      theSum=0;
+      for (j=0;j<gNumberOfEigenFunctions;j++)
+      {
+         Eigenfunc(j,inR_MKS,inPhi_Rad,&theMagn_MKS,&thePhase_Rad);
+
+         // the expression below ignores any phase contribution
+         // returned by the Eigenfunc.  gExpansionCoeff_MKS[] is
+         // assumed to be a real number.
+         theSum+=gExpansionCoeff_MKS[j]* \
+                 BesselJZero(j)*BesselJZero(j)*theMagn_MKS;
+
+      }
+      theSum*= -1/theMembraneRadiusSqrd_MKS;
+
+      return theSum;
+   }
+
+   // if R >= R_membrane, force function to be zero
+
+   return 0;
+
+}
+
+
+
+//---------------------------------------------------------------------------
+// TestMembraneExpansion
+//
+// DEBUG function.  Prints several values of the function specified
+// by the function pointer argument, within the specified range of
+// the independent variable [inRL,inRH], inNum sample points.
+//
+// called by: RealMatrixA
+//
+// plk 03/08/2005
+//---------------------------------------------------------------------------
+
+void TestMembraneExpansion(double inRL,double inRH, double inNum)
+{
+   int i;
+
+   double theR, thePhi_Rad;
+   double theR_mm;
+   double theDR;
+   double theMagn;
+   double thePhase;
+   double theShape;
+   double theLaplacian;
+   double **theLogData;
+
+   theDR=(inRH-inRL)/(inNum+1);
+
+   theLogData=dmatrix(1,(int)inNum+10,1,3);
+
+   printf("\n\nTestMembraneExpansion\n");
+   printf("r_mm\t\tshape_um\tLaplacian_MKS\n");
+
+   i=0;
+   for (theR=inRL; theR<=(inRH+0.01*inRH); theR+=theDR)
+   {
+
+        theShape = ExpansionInEFuncsDeformation_MKS(theR, thePhi_Rad);
+        theShape*=1e6;
+        theR_mm=theR*1e3;
+        theLaplacian = Del2Expansion_MKS(theR, thePhi_Rad);
+        printf("%f\t%1.8f\t%2.3f\n",theR_mm,theShape,theLaplacian);
+
+        i++;
+        theLogData[i][1]=theR_mm;
+        theLogData[i][2]=theShape;
+        theLogData[i][3]=theLaplacian;
+   }
+   printf("\n\n");
+
+   LogDMatrix(theLogData,1,i,1,3,\
+              "TestMembraneExpansion: r_mm,xi_um,del2(xi)_MKS");
+
+
+}
+
+//---------------------------------------------------------------------------
+// TestMembraneShapeAtSelectedElectrodes
+//
+// THIS PROCEDURE HAS NOT BEEN TESTED, AND IS NOT CURRENTLY IMPLEMENTED.
+// IT MAY HAVE BUGS
+//
+// plk 4/1/2005
+//---------------------------------------------------------------------------
+void TestMembraneShapeAtSelectedElectrodes()
+{
+    int i,j,k;
+
+    float theR;
+    float thePhi;
+    float  theVoltage;
+    double theShape;
+
+    LogMessage("---Test Membrane Shape At Selected Electrodes---");
+
+    //---------------------------------------------
+    // TEST COMPUTATION OF MEMBRANE SHAPE AT
+    // SELECTED ELECTRODE LOCATIONS (ON ARRAY)
+    //---------------------------------------------
+    printf("Index\tr_m\tphi_rad\tshape_MKS\tVoltage\n");
+
+    for (k=1;k<=2;k++)
+    {
+        for (j=1;j<=2;j++)
+        {
+           i=EIndex(k,j);
+           theR=ERCenter_MKS(i);
+           thePhi=EPhiCenter_rad(i);
+           theShape=gMembraneShape(theR,thePhi);
+           theVoltage=ElectrodeVoltage(i);
+           printf("%d\t%6.2f\t%6.2f\t%1.8f\t%6.2f\n",\
+           i,theR,thePhi,theShape,theVoltage);
+        }
+    }
+
+
+    return;
+}
+
+
+//---------------------------------------------------------------------------
+// ParabolicDeformation_MKS
+//
+// computes the membrane deformation at the specified radial coordinate.
+// deformation is parabolic with maximum deformation at r=0.  This peak
+// deformation is specified in the Membrane.h include file.  Membrane
+// deformation is computed from the equation:
+//                         x
+//              xi(r) =   --- (  R^2 - r^2 )
+//                        R^2
+//
+// x = peak deformation; R = membrane radius; xi = deformation
+//
+// Deformations computed with this function can be interpreted as a
+// deformation toward either electrode plane.  It returns a positive
+// number which is GENERALLY associated with deformation toward the
+// electrode array (e.g. "downward").
+//
+// called by:  MatrixA::WeightFn()
+//
+// plk 3/10/2005
+//---------------------------------------------------------------------------
+double ParabolicDeformation_MKS(double inR_MKS, double inArbitraryPhi)
+{
+   double thePeakDeformation_MKS;
+   double theMembraneRadius_MKS;
+   double theDeformation_MKS;
+   double theRadiusSqrd_MKS;
+   double theSF_MKS;
+
+   thePeakDeformation_MKS = gPeakDeformation_um*1.0e-6;
+   theMembraneRadius_MKS = gMembraneRadius_mm*1.0e-3;
+   theRadiusSqrd_MKS = theMembraneRadius_MKS*theMembraneRadius_MKS;
+
+   theSF_MKS = thePeakDeformation_MKS/(theRadiusSqrd_MKS);
+
+   theDeformation_MKS = theSF_MKS*( theRadiusSqrd_MKS - inR_MKS*inR_MKS );
+
+   return theDeformation_MKS;
+}
+
+
+
+

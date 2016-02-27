@@ -1,0 +1,28 @@
+USEUNIT("SAValidate.c");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\CompiledAsDll\BesselJZeros.c");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\CompiledAsDll\BESSJ.C");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\CompiledAsDll\BESSJ0.C");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\CompiledAsDll\BESSJ1.C");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\CompiledAsDll\ComputeOmegaMatrix.c");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\CompiledAsDll\Eigenfunc.c");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\CompiledAsDll\EIGSRT.C");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\CompiledAsDll\ElectrodeArray.c");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\CompiledAsDll\JACOBI.C");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\CompiledAsDll\MatrixA.c");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\CompiledAsDll\MatrixElementA.c");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\CompiledAsDll\MatrixUtils.c");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\CompiledAsDll\Membrane.c");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\CompiledAsDll\NRUTIL1.C");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\CompiledAsDll\POLINT.C");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\CompiledAsDll\QRomb.c");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\CompiledAsDll\QTRAP.C");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\CompiledAsDll\RealMatrixA.c");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\CompiledAsDll\TQLI.C");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\CompiledAsDll\TRAPZD.C");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\CompiledAsDll\TRED2.C");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\CompiledAsDll\Project1_wrap.c");
+USELIB("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\CompiledAsDll\tcl80.lib");
+//---------------------------------------------------------------------------
+This file is used by the project manager only and should be treated like the project file
+
+DllEntryPoint

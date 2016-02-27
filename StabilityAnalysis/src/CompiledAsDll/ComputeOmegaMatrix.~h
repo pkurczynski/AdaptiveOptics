@@ -1,0 +1,59 @@
+//---------------------------------------------------------------------------
+// ComputeOmegaMatrix.h
+//
+// Computes Omega Matrix and its eigenvalues & eigenvectors to determine
+// the stability of a particular membrane configuration.  See Formal
+// Stability Calculation write-up.
+//
+// Location of important tunable parameters:
+//
+//     Parameter                                    Location (file)
+// -----------------------                         ------------------
+//
+// gNumberOfEigenFunctions                         Eigenfunc.h
+//      the number of membrane eigenfunctions used in the calculation
+//      of matrix elements etc.
+//
+// gEPS                                            MatrixA.h
+//      Fractional accuracy of integrals computed numerically with the
+//      trapezoidal rule algorithm in MatrixA.c
+//
+// gMembranePeakDeformation_um                     Membrane.h
+//      Peak deformation of the membrane, according to the parabolic
+//      model, whereby the membrane shape is parabolic with peak deformation
+//      occurring at the membrane center.  Positive deflections of the
+//      membrane correspond to deflection toward the electrode array.
+//
+// gMembraneStress_MPa ...                         Membrane.h
+//      Membrane and device characteristics are listed here.
+//
+// ParabolicDeformation_MKS()                      Membrane.c
+//      Function to determine the shape of the membrane.  This function
+//      implements a parabolic membrane deformation.
+//
+// BesselJZerosLookUp[][]                          BesselJZeros.h
+//      Lookup table of zeros of Bessel functions, including order and zero
+//      number as well as J-index number for each Bessel function zero.
+//
+//
+//
+// plk 03/13/2005
+//---------------------------------------------------------------------------
+#ifndef COMPUTEOMEGAMATRIX_H
+#define COMPUTEOMEGAMATRIX_H
+
+
+
+
+void ComputeOmegaMatrix(float **outOmega);
+
+void DiagonalizeMatrix(float **inMatrix, \
+                       int inDim, \
+                       float *outEigenValue, \
+                       float **outEigenVector);
+
+float KroneckerDelta(int i, int j);
+
+
+
+#endif

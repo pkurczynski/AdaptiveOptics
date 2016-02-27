@@ -1,0 +1,419 @@
+//---------------------------------------------------------------------------
+// Eigenfunc.c                                  C Program file
+//
+// methods for an Eigenfunc class implementation.  These are eigenfunctions
+// of a circular membrane, constrained at the edge.
+//
+// plk 03/08/2005
+//---------------------------------------------------------------------------
+#include "BesselJZeros.h"
+#include "Eigenfunc.h"
+#include "Membrane.h"
+#include "MatrixA.h"   // for NR integration routines
+#include "NR.h"
+#include <math.h>
+#include <stdio.h>
+
+int    gNumberOfEigenFunctions = 6;
+
+int    gEPMatrixActiveRow;
+int    gEPMatrixActiveCol;
+
+
+extern double gMembraneRadius_mm;
+extern int    gNumberOfEigenFunctions;
+
+
+//---------------------------------------------------------------------------
+// Eigenfunc
+//
+// returns the value of a membrane eigenfunction at the desired r, phi
+// coordinates.  Eigenfunctions are indexed by a "J index" that is
+// related to v,n by formulas/lookup tables found in BesselJZero.h
+//
+//                          1                                     i*v*phi
+// zeta_vn =  ---------------------------- * J_v( X_vn * r/a ) * e
+//             a*sqrt(pi)*abs(J_v+1(X_vn))
+//
+//
+// called by:   MatrixA::AIntegrandRF
+//
+// plk 03/08/2005
+//---------------------------------------------------------------------------
+void Eigenfunc(int inJIndex,\
+               double inR_MKS, \
+               double inPhi_Rad, \
+               double *outMagn_MKS, \
+               double *outPhase_Rad)
+{
+     int    theVIndex;
+     int    theNIndex;
+     double PI;
+     double theNorm_MKS;
+     double theScaledR;
+     double theBesselArg;
+     double theMagn;
+     double thePhase;
+     double theBesselFactor;
+     double theZero;
+     double theMembraneRadius_MKS;
+
+     theMembraneRadius_MKS = gMembraneRadius_mm * 1.0e-3;
+
+     PI = 3.1415926535;
+
+     // look up v,n indices using table in BesselJZeros.h
+     theVIndex=BesselJZerosLookUp[inJIndex][1];
+     theNIndex=BesselJZerosLookUp[inJIndex][2];
+
+     theZero=BesselJZero(inJIndex);
+     theBesselFactor=BesselJn(theVIndex+1,theZero);
+     theNorm_MKS=theMembraneRadius_MKS*sqrt(PI)*fabs(theBesselFactor);
+     if (theNorm_MKS!=0)
+        theNorm_MKS=1/theNorm_MKS;
+     else
+        theNorm_MKS=9999;
+
+     theScaledR=inR_MKS/theMembraneRadius_MKS;
+     theBesselArg=BesselJZero(inJIndex)*theScaledR;
+
+     theMagn=theNorm_MKS*BesselJn(theVIndex, theBesselArg);
+     thePhase = theVIndex*inPhi_Rad;
+
+     *outMagn_MKS=theMagn;
+     *outPhase_Rad=thePhase;
+}
+
+
+//---------------------------------------------------------------------------
+// ComputeEPMatrix
+//
+// Computes the EigenProduct matrix to verify orthonormality of the
+// eigenfunctions.  Orthonormal eigenfunctions will produce an EPMatrix
+// that is the identity matrix.  See EPMatrixElement() for the definition
+// of the EP Matrix.
+//
+// called by:
+// plk 03/12/2005
+//---------------------------------------------------------------------------
+
+void ComputeEPMatrix(double **outEP)
+{
+   int i,j;
+   int ii,jj;
+
+
+   // realMatrixA is indexed 0...N-1, but EPMatrix must
+   // be indexed 1...N for later NR routines.  Therefore
+   // use i-->ii; j-->jj indices to remap this matrix.
+   for(ii=1;ii<=gNumberOfEigenFunctions;ii++)
+   {
+        for(jj=1;jj<=gNumberOfEigenFunctions;jj++)
+        {
+           //DEBUG
+           //printf("ComputeEPMatrix: EPMatrixElement[%d][%d]\n\n",i,j);
+           i=ii-1;
+           j=jj-1;
+
+           outEP[ii][jj] = EPMatrixElement(i,j);
+        }
+   }
+
+}
+
+//---------------------------------------------------------------------------
+// EPMatrixElement
+//
+// Computes the matrix element EP_jj' which is the inner product of
+// eigenfunctions j,j'.  For an orthonormal set of eigenfunctions,
+// EP_jj' = KroneckerDelta_jj'
+//
+// Orthogonality of the phi basis functions is used
+// to compute the phi integral automatically.  Numerical integration is
+// used to compute the radial integral.  The matrix element is given by:
+//
+//                ^
+//               |
+//    EP_jj'  =  |  zeta_j(r,phi) * zeta_j'(r,phi)  r dr dphi
+//               |
+//              ^
+//
+// The integration is carried out over the membrane surface.
+//
+// zeta_j, _j' are the eigenfunctions of the membrane.
+//
+// called by: ComputeEPMatrix
+// plk 03/10/2005
+//---------------------------------------------------------------------------
+double EPMatrixElement(int inJRow, int inJCol)
+{
+
+   int theRowVIndex;
+   int theColVIndex;
+
+   double theRFactor;
+   double thePhiFactor;
+   double theMagn;
+   double thePhase;
+   double theMembraneRadius_MKS;
+   double PI = 3.1415926535;
+   int theTestRow;
+
+   double (*theFunc)(double);
+
+   theRFactor   = 1.0;
+   thePhiFactor = 1.0;
+
+   // set variables, function pointer for NR integration
+   // routine (used to evaluate radial integral).
+   theFunc = EPIntegrandRF;
+
+
+   gEPMatrixActiveRow = inJRow;
+   gEPMatrixActiveCol = inJCol;
+
+
+   // set v indices for use in phi integration.
+   theRowVIndex = BesselVIndex(inJRow);
+   theColVIndex = BesselVIndex(inJCol);
+
+   // Assuming Weight function is independent of phi, then the
+   // angular integration is computed analytically.  Because of
+   // orthogonality of the angular functions, matrix elements
+   // with v_row != v_column are zero.
+   if (theRowVIndex == theColVIndex)
+        thePhiFactor = 2*PI;
+   else
+   {
+        thePhiFactor = 0.0;
+        theMagn = 0.0;
+        return theMagn;
+   }
+
+
+   //------------------------------------------------------
+   //radial integration:
+   //------------------------------------------------------
+
+   theMembraneRadius_MKS = gMembraneRadius_mm*1.0e-3;
+
+   //DEBUG
+   //dump(theFunc,0,theMembraneRadius_MKS,10);
+
+   // Trapezoidal Rule Integrator.
+   theRFactor = qtrap(theFunc,0,theMembraneRadius_MKS);
+
+   // In order for this routine to work, you will probably
+   // have to change all double's to doubles, and make sure
+   // that <math.h> is explicitly included in order to avoid
+   // problems with fabs() and maybe other math functions.
+   //
+   // Romberg Integrator.
+   //theRFactor = qromb(theFunc,0,theMembraneRadius_MKS);
+   //------------------------------------------------------
+
+
+
+   // for the case of azimuthally symmetric weight function, the
+   // matrix element is a real number.
+   theMagn = theRFactor * thePhiFactor;
+   thePhase = 0;
+
+   return theMagn;
+
+
+
+}
+
+
+
+//---------------------------------------------------------------------------
+// EPIntegrandRF
+//
+// Computes the radial factor of the integrand of the matrix element "A."
+// calculations. This function assumes that the weight function is
+// independent of the phi coordinate, and therefore the integral is
+// only over the radial coordinate.  This function will be called by
+// the 1D-integration (Numerical Recipes) routine to compute the radial
+// integral of the matrix element.
+//
+// arguments:  inR    the current value of the radial coordinate (MKS units)
+//
+// uses global variables:
+//
+//             gEPMatrixActiveRow   the row index of the current matrix element
+//             gEPMatrixActiveCol   the col index of the current matrix element
+//
+// called by:   (implicitly, through NR integration routine).
+//
+// plk 03/07/2005
+//---------------------------------------------------------------------------
+double EPIntegrandRF(double inR_MKS)
+{
+
+
+   double theRowEigenMagn;
+   double theRowEigenPhase;
+
+   double theColEigenMagn;
+   double theColEigenPhase;
+
+   double theEigenProduct;
+   double theEPIntegrandRF;
+   double theArbitraryPhi;
+
+
+   // compute magnitude, phase of each eigenfunction at the current
+   // r coordinate.  Because only the magnitudes are used in this
+   // function, the input phi value is arbitrary.
+   theArbitraryPhi=0;
+
+
+   Eigenfunc(gEPMatrixActiveRow, \
+             inR_MKS, \
+             theArbitraryPhi, \
+             &theRowEigenMagn, \
+             &theRowEigenPhase);
+
+   Eigenfunc(gEPMatrixActiveCol, \
+             inR_MKS, \
+             theArbitraryPhi, \
+             &theColEigenMagn, \
+             &theColEigenPhase);
+
+   theEigenProduct = theRowEigenMagn*theColEigenMagn;
+
+   // multiply by the value of the radial coordinate (Jacobian in
+   // polar coordinates)
+   theEPIntegrandRF = theEigenProduct*inR_MKS;
+
+
+   return theEPIntegrandRF;
+
+}
+
+
+
+//---------------------------------------------------------------------------
+// PrintEigenfuncR
+//
+// Prints the values of the specified eigenfunction over a
+// range of the radial coordinate.
+//
+// called by:
+// plk 03/08/2005
+//---------------------------------------------------------------------------
+
+void PrintEigenfuncR(int inIndex, \
+                     double inRL, \
+                     double inRH, \
+                     double inPhi, \
+                     int inNum)
+{
+
+   double theR;
+   double theDR;
+   double theMagn;
+   double thePhase;
+
+   theDR=(inRH-inRL)/inNum;
+
+   printf("Eigenfunction %d\n",inIndex);
+   printf("Phi=%f\n",inPhi);
+   printf("r\t\tmagn\t\tphase\n");
+   for (theR=inRL; theR<=inRH; theR+=theDR)
+   {
+        Eigenfunc(inIndex,theR,inPhi,&theMagn,&thePhase);
+        printf("%f\t%f\t%f\n",theR,theMagn,thePhase);
+   }
+
+}
+
+
+//---------------------------------------------------------------------------
+// SaveEigenfuncR
+//
+// Prints the values of the specified eigenfunction over a
+// range of the radial coordinate.
+//
+// called by:
+// plk 03/08/2005
+//---------------------------------------------------------------------------
+
+void SaveEigenfuncR(int inIndex, \
+                     double inRL, \
+                     double inRH, \
+                     double inPhi, \
+                     int inNum)
+{
+   FILE *theSaveFile;
+   char   theFileName[] = "Eigenfunc.txt";
+   double theR;
+   double theDR;
+   double theMagn;
+   double thePhase;
+
+
+   theDR=(inRH-inRL)/inNum;
+
+   if ((theSaveFile = fopen(theFileName, "wt")) == NULL)
+   {
+      fprintf(stderr, "Cannot open output file.\n");
+      return;
+   }
+
+   fprintf(theSaveFile,"Eigenfunction %d\n",inIndex);
+   fprintf(theSaveFile,"Phi=%f\n",inPhi);
+   fprintf(theSaveFile,"r\tmagn\tphase\n");
+   for (theR=inRL; theR<=inRH; theR+=theDR)
+   {
+        Eigenfunc(inIndex,theR,inPhi,&theMagn,&thePhase);
+        fprintf(theSaveFile,"%f\t%f\t%f\n",theR,theMagn,thePhase);
+   }
+
+   fprintf(stderr, "\nSaved data to file %s.\n", theFileName);
+   fclose(theSaveFile);
+
+}
+
+
+
+
+#if 0
+//---------------------------------------------------------------------------
+// dump
+//
+// DEBUG function.  Prints several values of the function specified
+// by the function pointer argument, within the specified range of
+// the independent variable [inRL,inRH], inNum sample points.
+//
+// called by: RealMatrixA
+//
+// plk 03/08/2005
+//---------------------------------------------------------------------------
+
+void dump(double (*inFunc)(double),double inRL,double inRH, double inNum)
+{
+
+   double theR;
+   double theDR;
+   double theMagn;
+   double thePhase;
+
+   theDR=(inRH-inRL)/inNum;
+
+   printf("MatrixA::dump\n");
+   printf("Radial integrand\n");
+   printf("Matrix Element [%d][%d]\n",gMatrixAActiveRow,gMatrixAActiveCol);
+
+   for (theR=inRL; theR<=inRH; theR+=theDR)
+   {
+        theMagn = (*inFunc)(theR);
+        printf("%f\t%f\n",theR,theMagn);
+   }
+   printf("\n\n");
+
+}
+
+#endif
+

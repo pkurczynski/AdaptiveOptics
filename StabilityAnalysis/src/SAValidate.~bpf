@@ -1,0 +1,25 @@
+USEUNIT("ComputeOmegaMatrix.c");
+USEUNIT("BesselJZeros.c");
+USEUNIT("Eigenfunc.c");
+USEUNIT("Membrane.h");
+USEUNIT("MatrixA.c");
+USEUNIT("Membrane.c");
+USEUNIT("MatrixUtils.c");
+USEUNIT("SAValidate.c");
+USEUNIT("ElectrodeArray.c");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 4\TRED2.C");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 4\BESSJ0.C");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 4\BESSJ1.C");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 4\EIGSRT.C");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 4\JACOBI.C");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 4\NRUTIL1.C");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 4\POLINT.C");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 4\QRomb.c");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 4\QTRAP.C");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 4\TQLI.C");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 4\TRAPZD.C");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 4\BESSJ.C");
+//---------------------------------------------------------------------------
+This file is used by the project manager only and should be treated like the project file
+
+main

@@ -1,0 +1,54 @@
+%module Savalidate
+%{
+  /* header files (optional) */
+%}
+
+/* SWIG library for creating accessor functions for arrays */
+%include carrays.i
+
+
+
+/* from SAValidate.c */
+
+
+extern int       gNumberOfEigenFunctions;
+extern int       gNumElectrodes;
+extern double    gPeakDeformation_um;
+extern float   **gOmega;
+extern double  **gMatrixA;
+extern float   **gEigenVector;
+extern float    *gEigenValue;
+extern double  (*gMembraneShape)(double, double);
+extern float   **gElectrodeVoltage;
+extern float   **gElectrodeVoltageMap;
+extern int       gMapDim;
+extern float  **gElectrodePosition_MKS;
+extern double    gVoltageA_V;
+extern double    gVoltageT_V;
+extern double    gDistT_um;
+extern double    gDistA_um;
+
+extern float gElectrodeWidth_um;
+extern float gElectrodeSpc_um;
+extern int   gNumElectrodes;
+
+
+
+void TestSmallAmplitudeStability(float inVaLow_V, \
+                                 float inVaHigh_V, \
+                                 float inVtLow_V, \
+                                 float inVtHigh_V,
+                                 int   inNumGridPoints);
+
+
+int Ping();
+int Createdevice();
+
+float GetDeviceStability();
+void RunStabilityComputation();
+void RunFastStabilityComputation();
+void TestStabilityMatrixEigenvectors();
+void TestMatrixAComputation();
+void TestMembraneEigenfunctions();
+
+void DoPeakDefVariationExpt(double inL_um, double inH_um, double inStep_um);

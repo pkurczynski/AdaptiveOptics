@@ -1,0 +1,23 @@
+USEUNIT("ComputeOmegaMatrix.c");
+USEUNIT("BesselJZeros.c");
+USEUNIT("Eigenfunc.c");
+USEUNIT("Membrane.h");
+USEUNIT("MatrixA.c");
+USEUNIT("Membrane.c");
+USEUNIT("MatrixUtils.c");
+USEUNIT("SAValidate.c");
+USEUNIT("ElectrodeArray.c");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\BESSJ.C");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\BESSJ0.C");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\BESSJ1.C");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\EIGSRT.C");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\JACOBI.C");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\NRUTIL1.C");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\POLINT.C");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\QRomb.c");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\TQLI.C");
+USEUNIT("\\gigabytes\home\jkl\kraken\krakenlap\Membrane Calculations\Analytical Calculations\Stability and Snap Down Calculations\Stability Formal Calculation\Program\Version 3\TRED2.C");
+//---------------------------------------------------------------------------
+This file is used by the project manager only and should be treated like the project file
+
+main

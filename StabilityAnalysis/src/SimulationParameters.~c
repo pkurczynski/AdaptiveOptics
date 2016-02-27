@@ -1,0 +1,60 @@
+//#include "SimulationParameters.h"
+#if 1
+#include "ComputeOmegaMatrix.h"
+#include "MatrixUtils.h"
+#include "MatrixA.h"
+#include "BesselJZeros.h"
+#include "Eigenfunc.h"
+#include "Membrane.h"
+#include "NR.h"
+#include "ElectrodeArray.h"
+
+#include <stdio.h>
+#endif
+
+
+int gNumberOfEigenFunctions;
+
+
+
+
+
+//---------------------------------------------------------------------------
+// InitSimParameters()
+//
+// Initialize simulation parameters:  global variables defined in
+// Membrane.h, MatrixA.h, Eigenfunc.h
+//
+//---------------------------------------------------------------------------
+
+void InitSimParameters()
+{
+
+gMembraneStress_MPa    = 3.0;
+gMembraneThickness_um  = 1.0;
+gMembraneTension_NByM  = 3.0;      // tension = stress * thickness
+gMembraneRadius_mm     = 7.5;
+
+
+gVoltageT_V             =  0.0;    // Transp. electrode voltage
+gVoltageA_V             = 10.0;    // Array electrode voltage
+gDistT_um               = 30.0;    // Transp. electr -- membr. dist.
+gDistA_um               = 30.0;    // Electr. array -- membr. dist.
+
+gPeakDeformation_um     =  0.0;
+
+gEPS = 1.0E-3;            //fractional accuracy of integration
+
+
+gNumberOfEigenFunctions = 5;
+
+
+gElectrodeWidth_um   = 275.0;
+gElectrodeSpc_um     = 5.0;
+gNumElectrodes       = 1022; // must equal dimension of ElectrodeLookUp
+
+
+//gMembraneShape       = AIntegrandRF;
+
+}
+ 
